@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE BASMENT — Artisanal Mixology</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --white:#FFFFFF;--off:#F7F6F3;--light:#EEECE8;--border:#E2DED7;
+  --muted:#9E9890;--dark:#1C1A17;--ink:#3A3630;--warn:#B85C38;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--ink);min-height:100vh;font-weight:300}
+
+/* HEADER */
+header{position:relative;padding:5rem 3rem 4rem;border-bottom:1px solid var(--border);overflow:hidden}
+.hdr-deco{position:absolute;top:0;right:0;width:260px;height:100%;border-left:1px solid var(--border);pointer-events:none}
+.hdr-deco::before{content:'';position:absolute;top:2rem;right:2rem;width:52px;height:52px;border:1px solid var(--border);border-radius:50%}
+.hdr-deco::after{content:'';position:absolute;bottom:2.5rem;right:50%;width:1px;height:60px;background:var(--border)}
+.hdr-inner{position:relative;max-width:1100px;margin:0 auto}
+.eyebrow{font-size:.66rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);margin-bottom:1.5rem;font-weight:400}
+h1{font-family:'EB Garamond',serif;font-size:clamp(3rem,8vw,6rem);font-weight:400;color:var(--dark);line-height:.95;letter-spacing:-.02em}
+h1 em{font-style:italic}
+.hdr-meta{margin-top:1.75rem;display:flex;align-items:center;gap:1.5rem}
+.hdr-stat{font-size:.68rem;color:var(--muted);letter-spacing:.15em;text-transform:uppercase}
+.hdr-sep{width:32px;height:1px;background:var(--border)}
+
+/* CONTROLS */
+.controls{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.ctrl-inner{max-width:1100px;margin:0 auto;padding:.8rem 3rem;display:flex;gap:.75rem;align-items:center;flex-wrap:wrap}
+.srch{position:relative;flex:0 0 220px}
+.srch svg{position:absolute;left:.7rem;top:50%;transform:translateY(-50%);width:13px;height:13px;color:var(--muted);pointer-events:none}
+.srch input{width:100%;border:1px solid var(--border);background:var(--off);color:var(--dark);font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:300;padding:.5rem .75rem .5rem 2rem;outline:none;transition:border-color .2s;border-radius:0}
+.srch input::placeholder{color:var(--muted)}
+.srch input:focus{border-color:var(--dark);background:var(--white)}
+.cat-filters{display:flex;gap:.25rem;flex-wrap:wrap}
+.cat-btn{border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.68rem;font-weight:400;letter-spacing:.06em;padding:.35rem .75rem;cursor:pointer;transition:all .15s;white-space:nowrap}
+.cat-btn:hover{color:var(--dark);border-color:var(--dark)}
+.cat-btn.active{color:var(--white);background:var(--dark);border-color:var(--dark)}
+
+/* MAIN */
+main{max-width:1100px;margin:0 auto;padding:0 3rem 8rem}
+
+/* SECTION HEAD */
+.sec-head{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:1.5rem;padding:2.25rem 0 0;border-top:1px solid var(--border);margin-top:2rem}
+.sec-head:first-child{border-top:none;margin-top:0}
+.sec-head h2{font-family:'EB Garamond',serif;font-size:1.05rem;font-weight:400;font-style:italic;color:var(--ink)}
+.sec-line{height:1px;background:var(--border)}
+.sec-count{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+
+/* COCKTAIL ROWS */
+.c-table{margin-top:.25rem}
+.c-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:1.5rem;padding:.85rem 0;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;margin:0 -.75rem;padding-left:.75rem;padding-right:.75rem}
+.c-row:hover{background:var(--off)}
+.c-row:hover .c-arrow{opacity:1;transform:translateX(2px)}
+.c-name{font-family:'EB Garamond',serif;font-size:1.1rem;font-weight:400;color:var(--dark)}
+.c-warn{font-size:.62rem;color:var(--warn);letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+.c-arrow{width:13px;height:13px;color:var(--muted);opacity:0;transition:all .15s;flex-shrink:0}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(28,26,23,.55);z-index:1000;display:flex;align-items:flex-end;justify-content:flex-end;opacity:0;pointer-events:none;transition:opacity .2s}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--white);width:min(460px,100vw);height:100vh;overflow-y:auto;border-left:1px solid var(--border);transform:translateX(40px);transition:transform .25s cubic-bezier(.16,1,.3,1)}
+.overlay.open .modal{transform:translateX(0)}
+.m-top{padding:1.75rem 1.75rem 1.25rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--white);z-index:2}
+.m-cat{font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;font-weight:400}
+.m-name{font-family:'EB Garamond',serif;font-size:1.9rem;font-weight:400;color:var(--dark);line-height:1.05}
+.m-close{position:absolute;top:1.5rem;right:1.5rem;background:none;border:1px solid var(--border);color:var(--muted);width:28px;height:28px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:all .15s;font-family:sans-serif}
+.m-close:hover{color:var(--dark);border-color:var(--dark)}
+
+/* SERVINGS */
+.srv-bar{display:flex;align-items:center;gap:.75rem;padding:.75rem 1.75rem;border-bottom:1px solid var(--border);background:var(--off)}
+.srv-lbl{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);flex:1;font-weight:400}
+.srv-btn{width:24px;height:24px;border:1px solid var(--border);background:var(--white);color:var(--dark);font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;font-family:sans-serif;line-height:1}
+.srv-btn:hover{background:var(--dark);color:var(--white);border-color:var(--dark)}
+.srv-n{font-family:'EB Garamond',serif;font-size:1.25rem;min-width:1.5rem;text-align:center;color:var(--dark)}
+
+/* RECIPE */
+.m-body{padding:1.5rem 1.75rem}
+.r-lbl{font-size:.58rem;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;font-weight:400}
+.ing-row{display:flex;justify-content:space-between;align-items:baseline;padding:.55rem 0;border-bottom:1px solid var(--border);gap:1rem}
+.ing-row:last-child{border-bottom:none}
+.ing-n{font-size:.85rem;color:var(--ink);font-weight:300}
+.ing-a{font-family:'EB Garamond',serif;font-size:.98rem;color:var(--dark);white-space:nowrap}
+.steps-sec{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+.steps-list{list-style:none}
+.step-item{display:flex;gap:.85rem;padding:.4rem 0;font-size:.8rem;color:var(--muted);line-height:1.55}
+.step-n{font-family:'EB Garamond',serif;font-size:.92rem;color:var(--dark);flex-shrink:0;width:1.1rem}
+.glass-row{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.76rem;color:var(--muted)}
+.glass-row strong{color:var(--ink);font-weight:400;text-transform:uppercase;font-size:.58rem;letter-spacing:.15em;margin-right:.5rem}
+.m-note{margin-top:.85rem;padding:.65rem .9rem;background:#FBF4F1;border-left:2px solid var(--warn);font-size:.75rem;color:var(--warn);font-weight:300;line-height:1.55}
+
+/* REFERENCE */
+.ref-sec{margin-top:5rem;padding-top:2.5rem;border-top:2px solid var(--dark)}
+.ref-h{font-family:'EB Garamond',serif;font-size:1.75rem;font-weight:400;color:var(--dark);margin-bottom:.35rem}
+.ref-sub{font-size:.68rem;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:2rem;font-weight:400}
+.ref-glbl{font-size:.58rem;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);margin:1.75rem 0 .85rem;padding-bottom:.5rem;border-bottom:1px solid var(--border);font-weight:400}
+.ref-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));border-top:1px solid var(--border);border-left:1px solid var(--border)}
+.ref-card{padding:1.1rem;border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
+.ref-cn{font-family:'EB Garamond',serif;font-size:.92rem;font-weight:500;color:var(--dark);margin-bottom:.4rem}
+.ref-card p{font-size:.76rem;color:var(--muted);line-height:1.75}
+.ref-card em{color:var(--ink);font-style:normal;font-weight:400}
+.acid-box{padding:1.1rem;border:1px solid var(--border);margin-bottom:1.25rem}
+.acid-box .ref-cn{font-size:.85rem}
+.acid-box p{font-size:.78rem;line-height:1.8;color:var(--muted)}
+.acid-tbl{width:100%;border-collapse:collapse;font-size:.78rem}
+.acid-tbl th{text-align:left;padding:.5rem .7rem;font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);font-weight:400}
+.acid-tbl td{padding:.48rem .7rem;border-bottom:1px solid var(--border);color:var(--muted);font-weight:300}
+.acid-tbl td:first-child{color:var(--dark);font-weight:400}
+.acid-tbl tr:last-child td{border-bottom:none}
+.empty{padding:4rem 0;font-family:'EB Garamond',serif;font-size:1.15rem;font-style:italic;color:var(--muted)}
+
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border)}
+
+@media(max-width:700px){
+  header{padding:3rem 1.5rem 2.5rem}
+  .hdr-deco{display:none}
+  .ctrl-inner{padding:.7rem 1.5rem}
+  main{padding:0 1.5rem 6rem}
+  .modal{width:100vw}
+  .m-top,.m-body{padding:1.4rem}
+  .srv-bar{padding:.7rem 1.4rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-deco"></div>
+  <div class="hdr-inner">
+    <p class="eyebrow">Artisanal Mixology</p>
+    <h1>THE<br><em>BASMENT</em></h1>
+    <div class="hdr-meta">
+      <span class="hdr-stat">57 cocktails</span>
+      <div class="hdr-sep"></div>
+      <span class="hdr-stat">7 categories</span>
+    </div>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="ctrl-inner">
+    <div class="srch">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="6.5" cy="6.5" r="4.5"/><path d="M10.5 10.5L14 14"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search cocktails...">
+    </div>
+    <div class="cat-filters" id="catFilters"></div>
+  </div>
+</div>
+
+<main>
+  <div id="listContainer"></div>
+
+  <div class="ref-sec">
+    <p class="ref-h">Reference Guide</p>
+    <p class="ref-sub">Ratios, Acid Adjusting &amp; Batched Recipes</p>
+
+    <p class="ref-glbl">Syrups &amp; Solutions</p>
+    <div class="ref-grid">
+      <div class="ref-card"><p class="ref-cn">Simple Syrup</p><p>Regular — <em>1:1</em><br>Rich — <em>2:1</em></p></div>
+      <div class="ref-card"><p class="ref-cn">Fruit Syrup</p><p><em>1:1 ratio</em></p></div>
+      <div class="ref-card"><p class="ref-cn">Honey Syrup</p><p><em>3:1 ratio</em></p></div>
+      <div class="ref-card"><p class="ref-cn">Fat Wash</p><p>Intense oils — <em>5:1</em><br>Light oils — <em>4:1</em></p></div>
+      <div class="ref-card"><p class="ref-cn">Milk Clarified</p><p><em>4:1 ratio</em></p></div>
+      <div class="ref-card"><p class="ref-cn">Saline Solution</p><p><em>80:20 ratio</em></p></div>
+      <div class="ref-card"><p class="ref-cn">Herb Infusion</p><p>250 ml spirit — <em>1.5 tbsp dried herbs</em></p></div>
+      <div class="ref-card"><p class="ref-cn">Water Dilution (Batched)</p><p>Low ABV / sweet-sour — <em>15%</em><br>High ABV — <em>17–18%</em></p></div>
+    </div>
+
+    <p class="ref-glbl" style="margin-top:2rem">Acid Adjusting</p>
+    <div class="acid-box">
+      <p class="ref-cn">1% Acid Solution</p>
+      <p>200 ml water &nbsp;·&nbsp; 67 g citric acid &nbsp;·&nbsp; 23 g malic acid<br><em>In 1 oz juice — 1 ml = +1% acidity</em></p>
+    </div>
+    <table class="acid-tbl">
+      <thead><tr><th>Fruit</th><th>Natural acidity</th><th>Add to reach 6%</th></tr></thead>
+      <tbody>
+        <tr><td>Lime</td><td>6%</td><td>0 ml</td></tr>
+        <tr><td>Lemon</td><td>5%</td><td>1 ml</td></tr>
+        <tr><td>Grapefruit</td><td>3%</td><td>3 ml</td></tr>
+        <tr><td>Pineapple</td><td>1%</td><td>5 ml</td></tr>
+        <tr><td>Orange</td><td>1%</td><td>5 ml</td></tr>
+      </tbody>
+    </table>
+
+    <p class="ref-glbl" style="margin-top:2rem">Batched Juice Recipes</p>
+    <div class="ref-grid">
+      <div class="ref-card"><p class="ref-cn">Granny Smith Apple</p><p>100 ml juice<br><em>5.2 g citric acid</em><br><em>1.6 g malic acid</em></p></div>
+      <div class="ref-card"><p class="ref-cn">Orange Juice</p><p>100 ml juice<br><em>3.8 g citric acid</em><br><em>2 g malic acid</em></p></div>
+      <div class="ref-card"><p class="ref-cn">Grapefruit Juice</p><p>15 g grapefruit peels<br>15 g sugar · 12 g citric acid<br>6 g malic acid · 0.5 g sea salt<br><em>Macerate 2h → add 250 ml water</em></p></div>
+    </div>
+  </div>
+</main>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="m-top">
+      <p class="m-cat" id="mCat"></p>
+      <h2 class="m-name" id="mName"></h2>
+      <button class="m-close" id="mClose">✕</button>
+    </div>
+    <div class="srv-bar">
+      <span class="srv-lbl">Servings</span>
+      <button class="srv-btn" id="srvD">−</button>
+      <span class="srv-n" id="srvN">1</span>
+      <button class="srv-btn" id="srvU">+</button>
+    </div>
+    <div class="m-body" id="mBody"></div>
+  </div>
+</div>
+
+<script>
+const CATS={
+  gin:{label:'Gin'},whiskey:{label:'Whiskey'},tequila:{label:'Tequila / Mezcal'},
+  vodka:{label:'Vodka'},rum:{label:'Rum'},cognac:{label:'Cognac'},other:{label:'Other Spirits'},
+};
+const CAT_ORDER=['gin','whiskey','tequila','vodka','rum','cognac','other'];
+
+const C=[
+  {id:1,name:'Basil Smash',cat:'gin',
+   i:[{n:'Gin',a:60,u:'ml'},{n:'Fresh lemon juice',a:22.5,u:'ml'},{n:'Simple syrup',a:22.5,u:'ml'},{n:'Fresh basil leaves',a:8,u:'leaves'}],
+   s:['Muddle basil with syrup in shaker tin','Add gin, lemon juice and ice','Shake hard 12 seconds','Double strain over fresh ice','Garnish with basil leaf'],g:'Old Fashioned / Rocks'},
+  {id:2,name:'Green Gin',cat:'gin',
+   i:[{n:'Gin',a:60,u:'ml'},{n:'Fresh lime juice',a:22.5,u:'ml'},{n:'Chartreuse Verte',a:15,u:'ml'},{n:'Simple syrup',a:15,u:'ml'},{n:'Cucumber',a:3,u:'slices'}],
+   s:['Muddle cucumber in shaker','Add remaining ingredients with ice','Shake hard','Double strain into chilled coupe'],g:'Coupe'},
+  {id:3,name:'The Last Word',cat:'gin',
+   i:[{n:'Gin',a:22.5,u:'ml'},{n:'Chartreuse Verte',a:22.5,u:'ml'},{n:'Maraschino',a:22.5,u:'ml'},{n:'Fresh lime juice',a:22.5,u:'ml'}],
+   s:['Combine all in shaker with ice','Shake hard 12 seconds','Strain into chilled coupe'],g:'Coupe'},
+  {id:4,name:'Negroni',cat:'gin',ni:'Sweet Vermouth',
+   i:[{n:'Gin',a:30,u:'ml'},{n:'Campari',a:30,u:'ml'},{n:'Sweet Vermouth',a:30,u:'ml'}],
+   s:['Build over large ice in rocks glass','Stir 20–25 rotations','Garnish with orange peel'],g:'Old Fashioned'},
+  {id:5,name:'Gin Old Fashioned',cat:'gin',
+   i:[{n:'Gin',a:60,u:'ml'},{n:'Rich simple syrup',a:7.5,u:'ml'},{n:'Angostura bitters',a:2,u:'dashes'},{n:'Orange bitters',a:1,u:'dash'}],
+   s:['Build over large ice in rocks glass','Stir 20–25 rotations','Garnish with lemon peel'],g:'Old Fashioned'},
+  {id:6,name:"Bee's Knees",cat:'gin',
+   i:[{n:'Gin',a:60,u:'ml'},{n:'Fresh lemon juice',a:22.5,u:'ml'},{n:'Honey syrup (3:1)',a:22.5,u:'ml'}],
+   s:['Combine all in shaker with ice','Shake hard 12 seconds','Double strain into chilled coupe'],g:'Coupe'},
+  {id:7,name:'Dry Martini',cat:'gin',ni:'Blanc / Dry Vermouth',
+   i:[{n:'Gin',a:60,u:'ml'},{n:'Dry / Blanc Vermouth',a:15,u:'ml'},{n:'Orange bitters',a:1,u:'dash'}],
+   s:['Stir in mixing glass over ice 30–40 rotations','Strain into chilled martini glass','Garnish with olive or lemon twist'],g:'Martini'},
+  {id:8,name:'White Lady',cat:'gin',
+   i:[{n:'Gin',a:45,u:'ml'},{n:'Cointreau',a:22.5,u:'ml'},{n:'Fresh lemon juice',a:22.5,u:'ml'},{n:'Egg white',a:1,u:''}],
+   s:['Dry shake without ice 10 seconds','Add ice, shake hard again','Double strain into chilled coupe'],g:'Coupe'},
+  {id:9,name:'Martinez',cat:'gin',ni:'Sweet Vermouth',
+   i:[{n:'Old Tom Gin',a:45,u:'ml'},{n:'Sweet Vermouth',a:30,u:'ml'},{n:'Maraschino',a:7.5,u:'ml'},{n:'Angostura bitters',a:2,u:'dashes'}],
+   s:['Stir in mixing glass over ice 30 rotations','Strain into chilled coupe','Garnish with lemon twist'],g:'Coupe'},
+  {id:10,name:'Bicycle Thief',cat:'gin',
+   i:[{n:'Gin',a:45,u:'ml'},{n:'Fresh grapefruit juice',a:30,u:'ml'},{n:'Campari',a:15,u:'ml'},{n:'Simple syrup',a:15,u:'ml'}],
+   s:['Combine all in shaker with ice','Shake hard','Strain over fresh ice'],g:'Rocks'},
+  {id:11,name:'Gimlet',cat:'gin',
+   i:[{n:'Gin',a:60,u:'ml'},{n:'Fresh lime juice',a:22.5,u:'ml'},{n:'Simple syrup',a:22.5,u:'ml'}],
+   s:['Combine all in shaker with ice','Shake hard 12 seconds','Strain into chilled coupe'],g:'Coupe'},
+  {id:12,name:'Eastside',cat:'gin',
+   i:[{n:'Gin',a:60,u:'ml'},{n:'Fresh lime juice',a:22.5,u:'ml'},{n:'Simple syrup',a:22.5,u:'ml'},{n:'Cucumber',a:3,u:'slices'},{n:'Mint leaves',a:6,u:'leaves'}],
+   s:['Gently muddle mint and cucumber with syrup','Add gin, lime and ice','Shake hard','Double strain into chilled coupe'],g:'Coupe'},
+  {id:13,name:'Enzoni',cat:'gin',
+   i:[{n:'Gin',a:30,u:'ml'},{n:'Campari',a:30,u:'ml'},{n:'Fresh lemon juice',a:22.5,u:'ml'},{n:'Simple syrup',a:15,u:'ml'},{n:'Red grapes',a:5,u:'grapes'}],
+   s:['Muddle grapes in shaker tin','Add remaining ingredients with ice','Shake hard','Double strain over ice'],g:'Rocks'},
+  {id:14,name:'The Green Eyes',cat:'gin',
+   i:[{n:'Gin',a:45,u:'ml'},{n:'Midori',a:15,u:'ml'},{n:'Fresh lime juice',a:22.5,u:'ml'},{n:'Coconut cream',a:15,u:'ml'}],
+   s:['Combine all in shaker with ice','Shake hard','Double strain into chilled coupe'],g:'Coupe'},
+  {id:15,name:'Clover Club',cat:'gin',note:'Can substitute strawberry for raspberry.',
+   i:[{n:'Gin',a:45,u:'ml'},{n:'Fresh lemon juice',a:22.5,u:'ml'},{n:'Raspberry syrup',a:22.5,u:'ml'},{n:'Egg white',a:1,u:''}],
+   s:['Dry shake without ice 10 seconds','Add ice, shake hard again','Double strain into chilled coupe'],g:'Coupe'},
+  {id:16,name:'Gin Sour',cat:'gin',
+   i:[{n:'Gin',a:60,u:'ml'},{n:'Fresh lemon juice',a:22.5,u:'ml'},{n:'Simple syrup',a:22.5,u:'ml'},{n:'Egg white',a:1,u:''}],
+   s:['Dry shake 10 seconds','Add ice, shake hard','Double strain into sour glass'],g:'Sour / Rocks'},
+  {id:17,name:'Jasmine',cat:'gin',
+   i:[{n:'Gin',a:45,u:'ml'},{n:'Campari',a:7.5,u:'ml'},{n:'Cointreau',a:7.5,u:'ml'},{n:'Fresh lemon juice',a:22.5,u:'ml'}],
+   s:['Combine all in shaker with ice','Shake hard','Strain into chilled coupe','Garnish with lemon twist'],g:'Coupe'},
+  {id:18,name:'The Casino',cat:'gin',
+   i:[{n:'Old Tom Gin',a:60,u:'ml'},{n:'Maraschino',a:7.5,u:'ml'},{n:'Orange bitters',a:2,u:'dashes'},{n:'Fresh lemon juice',a:7.5,u:'ml'}],
+   s:['Combine all in shaker with ice','Shake hard','Strain into chilled coupe','Garnish with maraschino cherry'],g:'Coupe'},
+  {id:19,name:'Alaska',cat:'gin',
+   i:[{n:'Gin',a:52.5,u:'ml'},{n:'Yellow Chartreuse',a:22.5,u:'ml'},{n:'Orange bitters',a:2,u:'dashes'}],
+   s:['Stir in mixing glass over ice 30 rotations','Strain into chilled coupe','Garnish with lemon twist'],g:'Coupe'},
+  {id:20,name:'Old Fashioned',cat:'whiskey',
+   i:[{n:'Bourbon / Rye',a:60,u:'ml'},{n:'Rich simple syrup',a:7.5,u:'ml'},{n:'Angostura bitters',a:2,u:'dashes'},{n:'Orange bitters',a:1,u:'dash'}],
+   s:['Build over large ice in rocks glass','Stir 20–25 rotations','Garnish with orange peel'],g:'Old Fashioned'},
+  {id:21,name:'Manhattan',cat:'whiskey',ni:'Sweet Vermouth',
+   i:[{n:'Rye Whiskey',a:60,u:'ml'},{n:'Sweet Vermouth',a:30,u:'ml'},{n:'Angostura bitters',a:2,u:'dashes'}],
+   s:['Stir in mixing glass over ice 30 rotations','Strain into chilled coupe','Garnish with cherry'],g:'Coupe'},
+  {id:22,name:'Boulevardier',cat:'whiskey',ni:'Sweet Vermouth',
+   i:[{n:'Bourbon',a:45,u:'ml'},{n:'Campari',a:30,u:'ml'},{n:'Sweet Vermouth',a:30,u:'ml'}],
+   s:['Stir in mixing glass over ice 30 rotations','Strain into glass','Garnish with orange peel'],g:'Coupe / Rocks'},
+  {id:23,name:'Whiskey Highball',cat:'whiskey',
+   i:[{n:'Whiskey',a:45,u:'ml'},{n:'Soda water',a:120,u:'ml'}],
+   s:['Pour whiskey over ice in highball glass','Top gently with soda water','Stir once very gently'],g:'Highball'},
+  {id:24,name:'Whiskey Sour',cat:'whiskey',
+   i:[{n:'Bourbon',a:60,u:'ml'},{n:'Fresh lemon juice',a:22.5,u:'ml'},{n:'Simple syrup',a:22.5,u:'ml'},{n:'Egg white',a:1,u:''}],
+   s:['Dry shake 10 seconds','Add ice, shake hard','Double strain into rocks glass','Dot top with Angostura bitters'],g:'Rocks / Sour'},
+  {id:25,name:'Expat',cat:'whiskey',
+   i:[{n:'Bourbon',a:45,u:'ml'},{n:'Amaro Montenegro',a:15,u:'ml'},{n:'Fresh lime juice',a:22.5,u:'ml'},{n:'Honey syrup',a:15,u:'ml'}],
+   s:['Combine all in shaker with ice','Shake hard','Strain over fresh ice'],g:'Rocks'},
+  {id:26,name:'Penicillin',cat:'whiskey',
+   i:[{n:'Blended Scotch',a:60,u:'ml'},{n:'Fresh lemon juice',a:22.5,u:'ml'},{n:'Honey-ginger syrup',a:22.5,u:'ml'},{n:'Islay Scotch (float)',a:7.5,u:'ml'}],
+   s:['Muddle fresh ginger in shaker tin','Add Scotch, lemon and syrup with ice','Shake hard','Double strain over large ice cube','Float Islay Scotch on top'],g:'Old Fashioned'},
+  {id:27,name:'Paper Plane',cat:'whiskey',note:'Amaro can be substituted.',
+   i:[{n:'Bourbon',a:22.5,u:'ml'},{n:'Aperol',a:22.5,u:'ml'},{n:'Amaro Nonino',a:22.5,u:'ml'},{n:'Fresh lemon juice',a:22.5,u:'ml'}],
+   s:['Equal parts — combine all in shaker with ice','Shake hard','Strain into chilled coupe'],g:'Coupe'},
+  {id:28,name:'Gold Rush',cat:'whiskey',
+   i:[{n:'Bourbon',a:60,u:'ml'},{n:'Fresh lemon juice',a:22.5,u:'ml'},{n:'Honey syrup (3:1)',a:22.5,u:'ml'}],
+   s:['Combine all in shaker with ice','Shake hard','Double strain over fresh ice'],g:'Rocks'},
+  {id:29,name:'Margarita',cat:'tequila',
+   i:[{n:'Blanco Tequila',a:60,u:'ml'},{n:'Cointreau',a:22.5,u:'ml'},{n:'Fresh lime juice',a:22.5,u:'ml'}],
+   s:['Salt rim optional','Combine all in shaker with ice','Shake hard','Strain into glass'],g:'Coupe / Rocks'},
+  {id:30,name:'Green Tequila',cat:'tequila',
+   i:[{n:'Blanco Tequila',a:60,u:'ml'},{n:'Fresh lime juice',a:22.5,u:'ml'},{n:'Chartreuse Verte',a:15,u:'ml'},{n:'Agave syrup',a:15,u:'ml'}],
+   s:['Combine all in shaker with ice','Shake hard','Strain into chilled coupe'],g:'Coupe'},
+  {id:31,name:'Tequila Old Fashioned',cat:'tequila',
+   i:[{n:'Reposado Tequila',a:60,u:'ml'},{n:'Agave syrup',a:7.5,u:'ml'},{n:'Angostura bitters',a:2,u:'dashes'},{n:'Mole bitters',a:1,u:'dash'}],
+   s:['Build over large ice in rocks glass','Stir 20–25 rotations','Garnish with orange peel'],g:'Old Fashioned'},
+  {id:32,name:'Naked and Famous',cat:'tequila',
+   i:[{n:'Mezcal',a:22.5,u:'ml'},{n:'Aperol',a:22.5,u:'ml'},{n:'Yellow Chartreuse',a:22.5,u:'ml'},{n:'Fresh lime juice',a:22.5,u:'ml'}],
+   s:['Equal parts — combine all in shaker with ice','Shake hard','Strain into chilled coupe'],g:'Coupe'},
+  {id:33,name:'Paloma',cat:'tequila',
+   i:[{n:'Blanco Tequila',a:60,u:'ml'},{n:'Fresh grapefruit juice',a:90,u:'ml'},{n:'Fresh lime juice',a:15,u:'ml'},{n:'Simple syrup',a:15,u:'ml'},{n:'Soda water',a:30,u:'ml'}],
+   s:['Build over ice in highball glass','Top gently with soda water','Garnish with grapefruit slice'],g:'Highball'},
+  {id:34,name:'Mezcal Last Word',cat:'tequila',
+   i:[{n:'Mezcal',a:22.5,u:'ml'},{n:'Chartreuse Verte',a:22.5,u:'ml'},{n:'Maraschino',a:22.5,u:'ml'},{n:'Fresh lime juice',a:22.5,u:'ml'}],
+   s:['Combine all in shaker with ice','Shake hard','Strain into chilled coupe'],g:'Coupe'},
+  {id:35,name:'El Diablo',cat:'tequila',
+   i:[{n:'Blanco Tequila',a:45,u:'ml'},{n:'Crème de Cassis',a:15,u:'ml'},{n:'Fresh lime juice',a:15,u:'ml'},{n:'Ginger beer',a:90,u:'ml'}],
+   s:['Pour tequila, cassis and lime over ice','Top gently with ginger beer','Garnish with lime wheel'],g:'Highball / Collins'},
+  {id:36,name:'Abeja',cat:'tequila',
+   i:[{n:'Mezcal',a:45,u:'ml'},{n:'Honey syrup (3:1)',a:22.5,u:'ml'},{n:'Fresh lime juice',a:22.5,u:'ml'},{n:'Chartreuse Verte',a:7.5,u:'ml'}],
+   s:['Combine all in shaker with ice','Shake hard','Double strain into chilled coupe'],g:'Coupe'},
+  {id:37,name:'The Division Bell',cat:'tequila',
+   i:[{n:'Mezcal',a:30,u:'ml'},{n:'Aperol',a:30,u:'ml'},{n:'Maraschino',a:15,u:'ml'},{n:'Fresh lime juice',a:22.5,u:'ml'}],
+   s:['Combine all in shaker with ice','Shake hard','Strain into chilled coupe'],g:'Coupe'},
+  {id:38,name:'Hood Winked',cat:'tequila',
+   i:[{n:'Blanco Tequila',a:45,u:'ml'},{n:'Fresh pineapple juice',a:45,u:'ml'},{n:'Cointreau',a:15,u:'ml'},{n:'Fresh lime juice',a:15,u:'ml'}],
+   s:['Combine all in shaker with ice','Shake hard','Double strain into chilled coupe'],g:'Coupe'},
+  {id:39,name:'The Brave',cat:'tequila',note:'Campari used in place of amaro.',
+   i:[{n:'Mezcal',a:30,u:'ml'},{n:'Campari',a:30,u:'ml'},{n:'Sweet Vermouth',a:30,u:'ml'}],
+   s:['Stir in mixing glass over ice 30 rotations','Strain into glass','Garnish with orange peel'],g:'Coupe'},
+  {id:40,name:'Oaxacanite',cat:'tequila',
+   i:[{n:'Mezcal',a:30,u:'ml'},{n:'Blanco Tequila',a:30,u:'ml'},{n:'Rich simple syrup',a:7.5,u:'ml'},{n:'Mole / chocolate bitters',a:2,u:'dashes'}],
+   s:['Build over large ice in rocks glass','Stir 20–25 rotations','Garnish with orange peel'],g:'Old Fashioned'},
+  {id:41,name:'Telekinesis',cat:'tequila',ni:'Sweet Vermouth',
+   i:[{n:'Blanco Tequila',a:45,u:'ml'},{n:'Sweet Vermouth',a:15,u:'ml'},{n:'Cointreau',a:15,u:'ml'},{n:'Fresh lime juice',a:15,u:'ml'}],
+   s:['Combine all in shaker with ice','Shake hard','Strain into chilled coupe'],g:'Coupe'},
+  {id:42,name:'Cosmopolitan',cat:'vodka',
+   i:[{n:'Citrus Vodka',a:45,u:'ml'},{n:'Cointreau',a:15,u:'ml'},{n:'Fresh lime juice',a:15,u:'ml'},{n:'Cranberry juice',a:30,u:'ml'}],
+   s:['Combine all in shaker with ice','Shake hard','Strain into chilled martini glass','Garnish with lemon twist'],g:'Cocktail / Martini'},
+  {id:43,name:'Espresso Martini',cat:'vodka',
+   i:[{n:'Vodka',a:45,u:'ml'},{n:'Kahlúa',a:22.5,u:'ml'},{n:'Double espresso',a:45,u:'ml'},{n:'Simple syrup',a:7.5,u:'ml'}],
+   s:['Brew espresso and let cool slightly','Combine all in shaker with ice','Shake very hard to create foam','Strain into chilled coupe','Garnish with three coffee beans'],g:'Martini / Coupe'},
+  {id:44,name:'Daiquiri',cat:'rum',
+   i:[{n:'White Rum',a:60,u:'ml'},{n:'Fresh lime juice',a:22.5,u:'ml'},{n:'Simple syrup',a:22.5,u:'ml'}],
+   s:['Combine all in shaker with ice','Shake hard 12 seconds','Double strain into chilled coupe'],g:'Coupe'},
+  {id:45,name:'Mojito',cat:'rum',
+   i:[{n:'White Rum',a:60,u:'ml'},{n:'Fresh lime juice',a:22.5,u:'ml'},{n:'Simple syrup',a:22.5,u:'ml'},{n:'Fresh mint leaves',a:10,u:'leaves'},{n:'Soda water',a:60,u:'ml'}],
+   s:['Gently muddle mint with syrup in glass','Add rum and lime over crushed ice','Short shake or swizzle','Top with soda water, stir gently'],g:'Highball / Collins'},
+  {id:46,name:'Caipirinha',cat:'rum',
+   i:[{n:'Cachaça',a:60,u:'ml'},{n:'Lime',a:0.5,u:'whole'},{n:'White sugar',a:15,u:'g'}],
+   s:['Cut lime into wedges, place in glass','Add sugar and muddle firmly','Fill with crushed ice','Pour cachaça and stir'],g:'Rocks (built in glass)'},
+  {id:47,name:'Hemingway Daiquiri',cat:'rum',
+   i:[{n:'White Rum',a:60,u:'ml'},{n:'Maraschino',a:15,u:'ml'},{n:'Fresh lime juice',a:22.5,u:'ml'},{n:'Fresh grapefruit juice',a:22.5,u:'ml'}],
+   s:['Combine all in shaker with ice','Shake hard','Double strain into chilled coupe'],g:'Coupe'},
+  {id:48,name:'Honeysuckle Daiquiri',cat:'rum',
+   i:[{n:'White Rum',a:60,u:'ml'},{n:'Fresh lime juice',a:22.5,u:'ml'},{n:'Honey syrup (3:1)',a:22.5,u:'ml'}],
+   s:['Combine all in shaker with ice','Shake hard','Double strain into chilled coupe'],g:'Coupe'},
+  {id:49,name:'Daisy de Santiago',cat:'rum',
+   i:[{n:'White Rum',a:60,u:'ml'},{n:'Yellow Chartreuse',a:22.5,u:'ml'},{n:'Fresh lime juice',a:22.5,u:'ml'}],
+   s:['Combine all in shaker with ice','Shake hard','Double strain into chilled coupe'],g:'Coupe'},
+  {id:50,name:'Sidecar',cat:'cognac',
+   i:[{n:'Cognac',a:60,u:'ml'},{n:'Cointreau',a:22.5,u:'ml'},{n:'Fresh lemon juice',a:22.5,u:'ml'}],
+   s:['Sugar rim optional','Combine all in shaker with ice','Shake hard','Double strain into chilled coupe','Garnish with lemon twist'],g:'Coupe'},
+  {id:51,name:'Cognac Old Fashioned',cat:'cognac',
+   i:[{n:'Cognac',a:60,u:'ml'},{n:'Rich simple syrup',a:7.5,u:'ml'},{n:'Angostura bitters',a:2,u:'dashes'},{n:'Orange bitters',a:1,u:'dash'}],
+   s:['Build over large ice in rocks glass','Stir 20–25 rotations','Garnish with orange peel'],g:'Old Fashioned'},
+  {id:52,name:'Champs Élysées',cat:'cognac',
+   i:[{n:'Cognac',a:45,u:'ml'},{n:'Chartreuse Verte',a:15,u:'ml'},{n:'Fresh lemon juice',a:22.5,u:'ml'},{n:'Simple syrup',a:7.5,u:'ml'},{n:'Angostura bitters',a:1,u:'dash'}],
+   s:['Combine all in shaker with ice','Shake hard','Double strain into chilled coupe'],g:'Coupe'},
+  {id:53,name:'Campari Shakerato',cat:'other',
+   i:[{n:'Campari',a:60,u:'ml'},{n:'Simple syrup',a:15,u:'ml'}],
+   s:['Combine in shaker with plenty of ice','Shake very hard to create foam','Double strain into chilled coupe'],g:'Coupe'},
+  {id:54,name:'Negroni Sour',cat:'other',ni:'Sweet Vermouth',
+   i:[{n:'Gin',a:30,u:'ml'},{n:'Campari',a:30,u:'ml'},{n:'Sweet Vermouth',a:30,u:'ml'},{n:'Fresh lemon juice',a:22.5,u:'ml'},{n:'Egg white',a:1,u:''}],
+   s:['Dry shake without ice 10 seconds','Add ice, shake hard again','Double strain into chilled glass'],g:'Coupe / Rocks'},
+  {id:55,name:'Aperol Sour',cat:'other',
+   i:[{n:'Aperol',a:45,u:'ml'},{n:'Fresh lemon juice',a:22.5,u:'ml'},{n:'Simple syrup',a:15,u:'ml'},{n:'Egg white',a:1,u:''}],
+   s:['Dry shake 10 seconds','Add ice, shake hard','Double strain into chilled coupe'],g:'Coupe'},
+  {id:56,name:'Aperol Spritz',cat:'other',ni:'Sparkling Wine',
+   i:[{n:'Aperol',a:60,u:'ml'},{n:'Prosecco / Sparkling Wine',a:90,u:'ml'},{n:'Soda water',a:30,u:'ml'}],
+   s:['Fill large glass with ice','Add Prosecco first','Add Aperol','Top with soda water','Garnish with orange slice'],g:'Wine / Balloon'},
+  {id:57,name:'Campari Spritz',cat:'other',ni:'Sparkling Wine',
+   i:[{n:'Campari',a:60,u:'ml'},{n:'Prosecco / Sparkling Wine',a:90,u:'ml'},{n:'Soda water',a:30,u:'ml'}],
+   s:['Fill large glass with ice','Add Prosecco first','Add Campari','Top with soda water','Garnish with orange peel'],g:'Wine / Balloon'},
+];
+
+let flt='all',srch='',srv=1,cur=null;
+
+function renderFilters(){
+  const el=document.getElementById('catFilters');
+  el.innerHTML=`<button class="cat-btn active" data-cat="all">All</button>`
+    +Object.entries(CATS).map(([k,v])=>`<button class="cat-btn" data-cat="${k}">${v.label}</button>`).join('');
+  el.querySelectorAll('.cat-btn').forEach(b=>b.addEventListener('click',()=>{
+    flt=b.dataset.cat;
+    el.querySelectorAll('.cat-btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    renderList();
+  }));
+}
+
+function getList(){
+  return C.filter(c=>(flt==='all'||c.cat===flt)&&(!srch||c.name.toLowerCase().includes(srch.toLowerCase())));
+}
+
+function renderList(){
+  const el=document.getElementById('listContainer');
+  const list=getList();
+  if(!list.length){el.innerHTML='<p class="empty">No cocktails found.</p>';return;}
+  const grp={};
+  list.forEach(c=>{(grp[c.cat]=grp[c.cat]||[]).push(c);});
+  let html='';
+  CAT_ORDER.forEach(cat=>{
+    if(!grp[cat])return;
+    html+=`<div class="sec-head"><h2>${CATS[cat].label}</h2><div class="sec-line"></div><span class="sec-count">${grp[cat].length}</span></div><div class="c-table">`;
+    grp[cat].forEach(c=>{
+      html+=`<div class="c-row" data-id="${c.id}">
+        <span class="c-name">${c.name}</span>
+        ${c.ni?`<span class="c-warn">Required: ${c.ni}</span>`:'<span></span>'}
+        <svg class="c-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </div>`;
+    });
+    html+=`</div>`;
+  });
+  el.innerHTML=html;
+  el.querySelectorAll('.c-row').forEach(r=>r.addEventListener('click',()=>open(+r.dataset.id)));
+}
+
+function open(id){
+  cur=C.find(c=>c.id===id);if(!cur)return;
+  srv=1;document.getElementById('srvN').textContent=1;
+  document.getElementById('mCat').textContent=CATS[cur.cat].label;
+  document.getElementById('mName').textContent=cur.name;
+  renderBody();
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function close(){
+  document.getElementById('overlay').classList.remove('open');
+  document.body.style.overflow='';cur=null;
+}
+
+function renderBody(){
+  if(!cur)return;
+  const ings=cur.i.map(i=>{
+    const a=i.a*srv;const d=Number.isInteger(a)?a:parseFloat(a.toFixed(1));
+    return `<div class="ing-row"><span class="ing-n">${i.n}</span><span class="ing-a">${d}${i.u?' '+i.u:''}</span></div>`;
+  }).join('');
+  document.getElementById('mBody').innerHTML=`
+    <p class="r-lbl">Ingredients</p><div>${ings}</div>
+    ${cur.g?`<div class="glass-row"><strong>Glass</strong>${cur.g}</div>`:''}
+    ${cur.note?`<div class="m-note">${cur.note}</div>`:''}
+  `;
+}
+
+document.getElementById('mClose').addEventListener('click',close);
+document.getElementById('overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)close();});
+document.getElementById('srvU').addEventListener('click',()=>{srv=Math.min(srv+1,12);document.getElementById('srvN').textContent=srv;renderBody();});
+document.getElementById('srvD').addEventListener('click',()=>{srv=Math.max(srv-1,1);document.getElementById('srvN').textContent=srv;renderBody();});
+document.getElementById('searchInput').addEventListener('input',e=>{srch=e.target.value;renderList();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+
+renderFilters();renderList();
+</script>
+</body>
+</html>
